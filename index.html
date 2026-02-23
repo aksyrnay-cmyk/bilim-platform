@@ -37,6 +37,11 @@
         .b-red { background: var(--danger); }
         
         .summary-box { background: #eff6ff; border: 1px solid #bfdbfe; padding: 20px; border-radius: 12px; margin-top: 30px; display: none; }
+        
+        .share-btn { background: #9333ea; margin-top: 10px; }
+        .share-btn:hover { background: #7e22ce; }
+        
+        .info-box { background: #e6f7ff; border: 1px solid #91d5ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; }
     </style>
 </head>
 <body>
@@ -87,9 +92,16 @@
 </div>
 
 <div class="container" id="lobby-view" style="display:none;">
-    <h2>Оқушыларға арналған ID: <span id="room-id-display" style="color:var(--danger); font-size:40px;"></span></h2>
+    <h2>📢 Оқушыларға арналған ID: <span id="room-id-display" style="color:var(--danger); font-size:40px;"></span></h2>
+    
+    <div id="share-info" class="info-box" style="display:none;">
+        <b>✅ Оқушы сілтемесі дайын!</b><br>
+        <span id="share-link-display" style="font-size:14px; word-break:break-all;"></span>
+    </div>
+    
     <div style="text-align:center; margin-bottom: 20px;">
         <button class="btn btn-add" id="start-exam-btn" style="max-width:300px;" onclick="startExam()">🏁 ОРЫНДАУДЫ БАСТАУ</button>
+        <button class="btn share-btn" id="share-btn" style="display:none;" onclick="shareLink()">📱 Оқушыларға сілтеме көшіру</button>
     </div>
 
     <h3>📊 Оқушылар мониторингі</h3>
@@ -145,7 +157,8 @@
     }
 
     async function addMatch() {
-        const lT = document.getElementById('mlt').value; const rT = document.getElementById('mrt').value;
+        const lT = document.getElementById('mlt').value; 
+        const rT = document.getElementById('mrt').value;
         if(!lT && !rT) return alert("Мәтін жазыңыз!");
         const lI = await compressImg(document.getElementById('mlf').files[0]);
         const rI = await compressImg(document.getElementById('mrf').files[0]);
@@ -180,11 +193,21 @@
         try {
             const data = JSON.stringify({ status: 'waiting', tasks, students: {} });
             localStorage.setItem('edu_session_' + sessionId, data);
+            
             document.getElementById('creator-view').style.display = 'none';
             document.getElementById('lobby-view').style.display = 'block';
             document.getElementById('room-id-display').innerText = sessionId;
+            
+            // Оқушы сілтемесін дайындау
+            const studentUrl = `https://aksyrnay-cmyk.github.io/bilim-platform/oqu.html?room=${sessionId}`;
+            document.getElementById('share-link-display').innerText = studentUrl;
+            document.getElementById('share-info').style.display = 'block';
+            document.getElementById('share-btn').style.display = 'block';
+            
             monitorInterval = setInterval(updateLobby, 1000);
-        } catch (e) { alert("ҚАТЕ: Жады толып кетті! Суреттерді азайтыңыз."); }
+        } catch (e) { 
+            alert("ҚАТЕ: Жады толып кетті! Суреттерді азайтыңыз."); 
+        }
     }
 
     function startExam() {
@@ -192,6 +215,20 @@
         data.status = 'started';
         localStorage.setItem('edu_session_' + sessionId, JSON.stringify(data));
         document.getElementById('start-exam-btn').style.display = 'none';
+    }
+
+    function shareLink() {
+        const studentUrl = `https://aksyrnay-cmyk.github.io/bilim-platform/oqu.html?room=${sessionId}`;
+        
+        // Көшіру
+        const tempInput = document.createElement('input');
+        tempInput.value = studentUrl;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempInput);
+        
+        alert("✅ Оқушы сілтемесі көшірілді!\n\n" + studentUrl + "\n\nЕнді оқушыларға WhatsApp, Telegram арқылы жіберіңіз.");
     }
 
     function getBadge(score, max) {
@@ -280,6 +317,25 @@
         reportDiv.innerHTML = html;
         reportDiv.style.display = 'block';
     }
+
+    // URL арқылы кіру
+    window.addEventListener('load', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const shareId = urlParams.get('share');
+        
+        if(shareId && sessionId === "") {
+            sessionId = shareId;
+            let data = localStorage.getItem('edu_session_' + sessionId);
+            if(data) {
+                document.getElementById('creator-view').style.display = 'none';
+                document.getElementById('lobby-view').style.display = 'block';
+                document.getElementById('room-id-display').innerText = sessionId;
+                tasks = JSON.parse(data).tasks;
+                if(monitorInterval) clearInterval(monitorInterval);
+                monitorInterval = setInterval(updateLobby, 1000);
+            }
+        }
+    });
 </script>
 </body>
 </html>

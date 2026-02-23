@@ -2,37 +2,31 @@
 <html lang="kk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Оқушы платформасы</title>
     <style>
-        :root { --primary: #2563eb; --bg: #f0fdf4; --border: #e5e7eb; }
-        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); padding: 20px; margin: 0; color: #1f2937; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        h2, h3 { color: #111827; text-align: center; }
+        :root { --primary: #2563eb; --success: #16a34a; --bg: #f0fdf4; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0fdf4; padding: 20px; margin: 0; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #111827; }
         
-        input[type="text"] { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        input[type="text"]:focus { border-color: var(--primary); outline: none; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
         
-        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn:hover { background: #1d4ed8; }
+        .btn { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; }
         .btn-finish { background: #16a34a; margin-top: 30px; }
         
         .task-block { margin-bottom: 25px; padding: 20px; background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; }
         
-        .radio-label { display: block; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 8px; cursor: pointer; background: white; transition: 0.2s; }
+        .radio-label { display: block; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px; margin-bottom: 8px; cursor: pointer; background: white; }
         .radio-label:hover { background: #eff6ff; }
         
-        .essay-text { line-height: 2; font-size: 17px; }
-        .essay-input { width: 140px !important; margin: 0 5px !important; padding: 5px !important; border: none !important; border-bottom: 2px solid var(--primary) !important; border-radius: 0 !important; background: #fffbeb; text-align: center; display: inline-block; }
+        .match-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .match-col { flex: 1; min-width: 200px; }
+        .match-item { padding: 15px; border: 2px solid #cbd5e1; border-radius: 8px; cursor: pointer; text-align: center; margin-bottom: 10px; background: white; }
+        .match-item.selected { border-color: var(--primary); background: #eff6ff; }
+        .match-item.paired { background: #e2e8f0; opacity: 0.7; pointer-events: none; }
         
-        .match-container { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-        .match-col { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px; }
-        .match-item { padding: 15px; border: 2px solid #cbd5e1; border-radius: 8px; cursor: pointer; text-align: center; background: white; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60px; font-weight: 500;}
-        .match-item img { max-width: 100px; max-height: 80px; margin-top: 8px; border-radius: 4px;}
-        .match-item.selected { border-color: var(--primary); background: #eff6ff; transform: scale(1.02); }
-        .match-item.paired { background: #e2e8f0; color: #94a3b8; border-color: #cbd5e1; pointer-events: none; opacity: 0.7; }
-        
-        .waiting-msg { text-align: center; padding: 40px; font-size: 20px; color: #64748b; }
+        .waiting-msg { text-align: center; padding: 40px; }
         .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -42,50 +36,45 @@
 <body>
 
 <div class="container" id="login-view">
-    <h2 style="text-align:center">📱 Оқушы платформасына кіру</h2>
+    <h2>📱 Оқушы платформасы</h2>
     
-    <div id="url-info" class="info-box" style="display:none;"></div>
+    <div id="auto-info" class="info-box" style="display:none;"></div>
     
-    <input type="text" id="st-name" placeholder="Аты-жөніңізді жазыңыз">
-    <input type="text" id="st-id" placeholder="Мұғалім берген ID код">
+    <input type="text" id="st-name" placeholder="Аты-жөніңіз">
+    <input type="text" id="st-id" placeholder="ID код">
+    
     <button class="btn" onclick="join()">Кіру</button>
-    
-    <p style="text-align:center; margin-top:20px; color:#666; font-size:14px;">
-        Мұғалім сілтеме жіберсе, ID автоматты толтырылады
-    </p>
 </div>
 
 <div class="container" id="waiting-view" style="display:none;">
     <div class="waiting-msg">
         <div class="loader"></div>
-        <b>Мұғалім тапсырманы бастағанша күтіңіз...</b>
+        <h3>Мұғалім тапсырманы бастағанша күтіңіз...</h3>
     </div>
 </div>
 
 <div class="container" id="exam-view" style="display:none;">
-    <h2 style="text-align:center; color:var(--primary); border-bottom:2px solid #e5e7eb; padding-bottom:10px;">Сәттілік!</h2>
+    <h2 style="color:var(--primary); text-align:center;">Сәттілік!</h2>
     <div id="tasks-container"></div>
-    <button class="btn btn-finish" onclick="finish()">АЯҚТАУ ЖӘНЕ ЖІБЕРУ</button>
+    <button class="btn btn-finish" onclick="finish()">АЯҚТАУ</button>
 </div>
 
 <script>
-    let myId = ""; 
-    let room = ""; 
+    let myId = "";
+    let room = "";
     let tasks = null;
-    let selLeft = null; 
-    let matchedPairs = []; 
+    let selLeft = null;
+    let matchedPairs = [];
 
-    // БЕТ ЖҮКТЕЛГЕНДЕ URL-ДЕН ID АЛУ
+    // URL-ден ID алу
     window.addEventListener('load', function() {
         const urlParams = new URLSearchParams(window.location.search);
         const roomFromUrl = urlParams.get('room');
         
         if(roomFromUrl) {
             document.getElementById('st-id').value = roomFromUrl;
-            
-            const infoBox = document.getElementById('url-info');
-            infoBox.style.display = 'block';
-            infoBox.innerHTML = `✅ ID код автоматты түрде енгізілді: <b>${roomFromUrl}</b><br>Тек атыңызды жазыңыз`;
+            document.getElementById('auto-info').style.display = 'block';
+            document.getElementById('auto-info').innerHTML = '✅ ID автоматты түрде енгізілді';
         }
     });
 
@@ -93,160 +82,174 @@
         let name = document.getElementById('st-name').value.trim();
         room = document.getElementById('st-id').value.trim();
         
-        if(!name || !room) return alert("Барлық жолақты толтырыңыз!");
+        if(!name || !room) {
+            alert("Аты-жөніңізді және ID-ны толтырыңыз!");
+            return;
+        }
         
-        // Тексеру: localStorage-та бар ма?
-        let session = JSON.parse(localStorage.getItem('edu_session_' + room));
-        if(!session) return alert("ID қате немесе мұғалім тапсырма жасамаған.");
+        // Тексеру
+        let sessionData = localStorage.getItem('edu_session_' + room);
+        if(!sessionData) {
+            alert("Қате: ID дұрыс емес немесе мұғалім тапсырманы бастамаған");
+            return;
+        }
         
-        myId = Date.now().toString();
-        session.students[myId] = { 
-            name, 
-            status: 'waiting', 
-            scores: {test:0, matching:0, essay:0} 
+        let session = JSON.parse(sessionData);
+        
+        myId = 's' + Date.now();
+        if(!session.students) session.students = {};
+        
+        session.students[myId] = {
+            name: name,
+            status: 'waiting',
+            scores: { test: 0, matching: 0, essay: 0 }
         };
         
         localStorage.setItem('edu_session_' + room, JSON.stringify(session));
         
+        // Күту бетіне өту
         document.getElementById('login-view').style.display = 'none';
         document.getElementById('waiting-view').style.display = 'block';
         
         // Мұғалімнің бастауын күту
-        let itv = setInterval(() => {
-            let s = JSON.parse(localStorage.getItem('edu_session_' + room));
-            if(s && s.status === 'started') { 
-                clearInterval(itv); 
-                s.students[myId].status = 'started';
-                localStorage.setItem('edu_session_' + room, JSON.stringify(s));
-                tasks = s.tasks; 
-                render(); 
+        let waitInterval = setInterval(function() {
+            let current = JSON.parse(localStorage.getItem('edu_session_' + room));
+            if(current && current.status === 'started') {
+                clearInterval(waitInterval);
+                
+                current.students[myId].status = 'started';
+                localStorage.setItem('edu_session_' + room, JSON.stringify(current));
+                
+                tasks = current.tasks;
+                startExam();
             }
         }, 1000);
     }
 
-    function shuffle(array) { 
-        let newArray = [...array];
-        for(let i = newArray.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-        }
-        return newArray;
-    }
-
-    function render() {
+    function startExam() {
         document.getElementById('waiting-view').style.display = 'none';
         document.getElementById('exam-view').style.display = 'block';
+        
         let html = '';
-
+        
+        // Тесттер
         if(tasks.test.length > 0) {
-            html += `<h3>📋 Тест тапсырмалары</h3>`;
+            html += '<h3>📋 Тест</h3>';
             tasks.test.forEach((t, i) => {
-                let opts = shuffle([...t.options]);
-                html += `<div class="task-block"><b>${i+1}. ${t.q}</b><div style="margin-top:10px;">`;
-                opts.forEach(o => {
-                    html += `<label class="radio-label"><input type="radio" name="t_${i}" value="${o}"> ${o}</label>`;
+                html += `<div class="task-block"><b>${i+1}. ${t.q}</b>`;
+                t.options.forEach(opt => {
+                    html += `<label class="radio-label">
+                        <input type="radio" name="q${i}" value="${opt}"> ${opt}
+                    </label>`;
                 });
-                html += `</div></div>`;
+                html += '</div>';
             });
         }
-
+        
+        // Сәйкестендіру
         if(tasks.matching.length > 0) {
-            html += `<h3>🔗 Сәйкестендіру</h3><p style="font-size:14px; color:#64748b;">Сол жақтағы нұсқаны басып, оған сәйкес келетін оң жақтағы нұсқаны басыңыз.</p><div class="task-block"><div class="match-container">`;
+            html += '<h3>🔗 Сәйкестендіру</h3>';
+            html += '<div class="task-block"><div class="match-container">';
             
-            let lefts = tasks.matching.map((m, i) => ({...m.left, realId: i}));
-            let rights = tasks.matching.map((m, i) => ({...m.right, realId: i}));
+            let leftItems = tasks.matching.map((m, idx) => ({ text: m.left.text, id: idx }));
+            let rightItems = tasks.matching.map((m, idx) => ({ text: m.right.text, id: idx }));
             
             // Кездейсоқ реттеу
-            lefts = shuffle(lefts);
-            rights = shuffle(rights);
+            leftItems.sort(() => Math.random() - 0.5);
+            rightItems.sort(() => Math.random() - 0.5);
             
-            html += `<div class="match-col">`;
-            lefts.forEach((l, i) => {
-                html += `<div class="match-item l-item" id="l_${i}" data-real="${l.realId}" onclick="selectLeft(this)">
-                            ${l.text || ''} ${l.img ? `<img src="${l.img}">` : ''}
-                         </div>`;
+            html += '<div class="match-col">';
+            leftItems.forEach((item, i) => {
+                html += `<div class="match-item" onclick="selectLeft(this, ${item.id})">${item.text}</div>`;
             });
-            html += `</div><div class="match-col">`;
-            rights.forEach((r, i) => {
-                html += `<div class="match-item r-item" id="r_${i}" data-real="${r.realId}" onclick="selectRight(this)">
-                            ${r.text || ''} ${r.img ? `<img src="${r.img}">` : ''}
-                         </div>`;
+            html += '</div>';
+            
+            html += '<div class="match-col">';
+            rightItems.forEach((item, i) => {
+                html += `<div class="match-item" onclick="selectRight(this, ${item.id})">${item.text}</div>`;
             });
-            html += `</div></div></div>`;
+            html += '</div>';
+            
+            html += '</div></div>';
         }
-
+        
+        // Эссе
         if(tasks.essay.length > 0) {
-            html += `<h3>✍️ Мәтінді толықтыру (Эссе)</h3>`;
-            tasks.essay.forEach((e, i) => {
-                let text = e.replace(/\*\*(.*?)\*\*/g, `<input type="text" class="essay-input e-q-${i}" data-ans="$1">`);
-                html += `<div class="task-block"><div class="essay-text">${text}</div></div>`;
+            html += '<h3>✍️ Эссе</h3>';
+            tasks.essay.forEach((text, i) => {
+                let parts = text.split(/\*\*(.*?)\*\*/g);
+                let newText = '';
+                for(let j = 0; j < parts.length; j++) {
+                    if(j % 2 === 1) {
+                        newText += `<input type="text" class="essay-input" data-ans="${parts[j]}" style="width:100px; margin:0 5px; padding:5px; border-bottom:2px solid var(--primary); border-top:none; border-left:none; border-right:none; text-align:center;">`;
+                    } else {
+                        newText += parts[j];
+                    }
+                }
+                html += `<div class="task-block">${newText}</div>`;
             });
         }
-
+        
         document.getElementById('tasks-container').innerHTML = html;
     }
 
-    function selectLeft(el) {
+    function selectLeft(el, id) {
         if(el.classList.contains('paired')) return;
-        document.querySelectorAll('.l-item').forEach(x => x.classList.remove('selected'));
+        document.querySelectorAll('.match-col:first-child .match-item').forEach(x => x.classList.remove('selected'));
         el.classList.add('selected');
-        selLeft = el;
+        selLeft = { el, id };
     }
 
-    function selectRight(el) {
-        if(el.classList.contains('paired') || !selLeft) return;
+    function selectRight(el, id) {
+        if(!selLeft || el.classList.contains('paired')) return;
         
-        const leftId = parseInt(selLeft.dataset.real);
-        const rightId = parseInt(el.dataset.real);
+        matchedPairs.push({ leftId: selLeft.id, rightId: id });
         
-        matchedPairs.push({ l_id: leftId, r_id: rightId });
-        
-        selLeft.classList.remove('selected');
-        selLeft.classList.add('paired');
-        selLeft.innerHTML = "✓ Жұпталды";
+        selLeft.el.classList.remove('selected');
+        selLeft.el.classList.add('paired');
+        selLeft.el.innerText = '✓ Таңдалды';
         
         el.classList.add('paired');
-        el.innerHTML = "✓ Жұпталды";
+        el.innerText = '✓ Таңдалды';
         
         selLeft = null;
     }
 
     function finish() {
-        if(!confirm("Тапсырманы аяқтап, мұғалімге жібересіз бе?")) return;
-
+        if(!confirm("Тапсырманы аяқтайсыз ба?")) return;
+        
         let scores = { test: 0, matching: 0, essay: 0 };
         
-        // Тест тексеру
+        // Тест есептеу
         tasks.test.forEach((t, i) => {
-            let r = document.querySelector(`input[name="t_${i}"]:checked`);
-            if(r && r.value === t.answer) scores.test++;
+            let radios = document.getElementsByName('q' + i);
+            for(let r of radios) {
+                if(r.checked && r.value === t.answer) scores.test++;
+            }
         });
-
-        // Сәйкестендіру тексеру
-        matchedPairs.forEach(pair => {
-            if(pair.l_id === pair.r_id) scores.matching++;
+        
+        // Сәйкестендіру есептеу
+        matchedPairs.forEach(p => {
+            if(p.leftId === p.rightId) scores.matching++;
         });
-
-        // Эссе тексеру
-        tasks.essay.forEach((e, i) => {
-            document.querySelectorAll(`.e-q-${i}`).forEach(inp => {
-                let userAns = inp.value.trim().toLowerCase();
-                let realAns = inp.dataset.ans.trim().toLowerCase();
-                if(userAns === realAns) scores.essay++;
-            });
+        
+        // Эссе есептеу
+        document.querySelectorAll('.essay-input').forEach(inp => {
+            if(inp.value.trim().toLowerCase() === inp.dataset.ans.toLowerCase()) {
+                scores.essay++;
+            }
         });
-
-        // Деректерді сақтау
-        let s = JSON.parse(localStorage.getItem('edu_session_' + room));
-        s.students[myId].scores = scores;
-        s.students[myId].status = 'finished';
-        localStorage.setItem('edu_session_' + room, JSON.stringify(s));
+        
+        // Сақтау
+        let session = JSON.parse(localStorage.getItem('edu_session_' + room));
+        session.students[myId].scores = scores;
+        session.students[myId].status = 'finished';
+        localStorage.setItem('edu_session_' + room, JSON.stringify(session));
         
         document.getElementById('exam-view').innerHTML = `
             <div style="text-align:center; padding:50px;">
-                <h1 style="color:#16a34a; font-size:60px; margin:0;">✓</h1>
+                <h1 style="color:#16a34a; font-size:60px;">✓</h1>
                 <h2>Тапсырма аяқталды!</h2>
-                <p>Жауаптарыңыз мұғалімге жіберілді.</p>
             </div>
         `;
     }
